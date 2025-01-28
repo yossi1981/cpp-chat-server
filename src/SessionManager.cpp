@@ -63,3 +63,13 @@ spClientSocket SessionManager::GetClientSocket(const string &sessionToken) {
         return _sessionTable[sessionToken];
     }
 }
+
+void SessionManager::Clear()
+{
+    std::lock_guard<std::mutex> lock(_sessionTableMtx);
+    for (auto pair : _sessionTable) {
+        pair.second->Close();
+    }
+    _sessionTable.clear();
+}
+

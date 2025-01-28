@@ -23,6 +23,7 @@ public:
     string CreateSession(spClientSocket clientSocket);
     void DestroySession(const string& sessionToken);
     spClientSocket GetClientSocket(const string& sessionToken);
+    void Clear();
 };
 
 #endif

@@ -14,8 +14,10 @@ private:
 
 public:
     ClientSocket(int socketFd);
+    ~ClientSocket();
     vector<uint8_t> Read();
     void Send(const vector<uint8_t> &buf);
+    void Close();
 };
 
 #endif

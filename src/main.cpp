@@ -40,7 +40,10 @@ int main() {
     printInstructions();
     while (true){
         std::getline(std::cin, input);
-        if (input == "exit") break;
+        if (input == "exit") {
+            chatServer.Shutdown();
+            break;
+        }
     }
     printExitMessage();
     return 0;

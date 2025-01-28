@@ -5,6 +5,7 @@
 #include <vector>
 #include "ClientSocket.h"
 #include "SessionManager.h"
+#include "ServerSocket.h"
 
 
 using namespace std;
@@ -16,6 +17,7 @@ private:
     Port _port;
     size_t _maxClients;
     SessionManager _sessionManager;
+    shared_ptr<ServerSocket> _serverSocket;
 
     SessionToken CreateSession(int clientSocketFD);
     void Interact(SessionToken token);
@@ -27,6 +29,7 @@ public:
                  size_t maxClients);
 
     void Start();
+    void Shutdown();
 };
 
 #endif

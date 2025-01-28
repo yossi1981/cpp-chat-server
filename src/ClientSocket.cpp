@@ -16,13 +16,28 @@ ClientSocket::ClientSocket(int socketFd) : _socketFd(socketFd)
 {
 }
 
+ClientSocket::~ClientSocket() 
+{
+    Close();
+}
+
+void ClientSocket::Close() 
+{
+    if (_socketFd > 0) 
+    {
+        close(_socketFd);
+        _socketFd = 0;
+        E("Client socket file descriptor has been closed");
+    }
+}
+
 vector<uint8_t> ClientSocket::Read()
 {
     uint8_t buf[BUF_SIZE];
     memset(buf, 0, sizeof(buf));
     ssize_t bytesRead = recv(_socketFd, buf, sizeof(buf) - 1, 0);
 
-    if (bytesRead < 0)
+    if (bytesRead <= 0)
     {
         throw runtime_error("could not read data from socket");
     }

@@ -32,29 +32,41 @@ void ChatServer::Interact(SessionToken token)
 {
     spClientSocket clientSocket = _sessionManager.GetClientSocket(token);
     while(true) {
-        vector<uint8_t> data = clientSocket->Read();
-        string msg(data.begin(), data.end());
+        vector<uint8_t> data;
+        bool _socket_valid = true;
+        try
+        {
+            data = clientSocket->Read();
+        }
+        catch(const std::exception& e)
+        {
+            _socket_valid = false;
+        }
         
-        if(msg == "exit") {
-            //disconnect
+        string msg(data.begin(), data.end());
+        size_t end = msg.find_first_of("\n\r");
+        if (end == std::string::npos) msg = "";
+        msg =  msg.substr(0, end + 1);
+        
+        if(_socket_valid == false || msg == "exit") {
+            _sessionManager.DestroySession(token);
             break;
         }
         stringstream sstr;
-        sstr << "Message was recieve from client " << token << ": " << msg;
+        sstr << "Message was recieved from client " << token << ": " << msg;
         E(sstr.str())
     }
 }
 
 void ChatServer::Listen() {
-    ServerSocket serverSocket(_ipAddress, _port, _maxClients);
-    serverSocket.Accept([this](int clientSocket) {
+    _serverSocket = make_shared<ServerSocket>(_ipAddress, _port, _maxClients);
+    _serverSocket->Accept([this](int clientSocket) {
         thread clientThread([this, clientSocket]() {
             SessionToken token = CreateSession(clientSocket);
             Interact(token);       
         });
         clientThread.detach();
     });
-
 }
 
 void ChatServer::Start()
@@ -63,4 +75,12 @@ void ChatServer::Start()
         Listen();
     });
     serverThread.detach();
+}
+
+void ChatServer::Shutdown() 
+{
+    _serverSocket->Shutdown();
+    _sessionManager.Clear();
+
+    
 }
