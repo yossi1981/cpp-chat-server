@@ -52,7 +52,7 @@ void ServerSocket::Accept(ClientConnectedListener ClientConnectedListener)
     {
         throw std::runtime_error("Socket creation failed");
     }
-    
+
     int opt = 1;
     if (setsockopt(_server_socket_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
     {
@@ -97,6 +97,4 @@ void ServerSocket::Accept(ClientConnectedListener ClientConnectedListener)
         }
         ClientConnectedListener(clientSocket);
     }
-
-    close(clientSocket);
 }
